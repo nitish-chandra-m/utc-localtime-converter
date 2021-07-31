@@ -15,12 +15,14 @@ func main() {
 	timeString, err := getInputTime()
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 
 	// Parse input string to time.Time with time.Kitchen layout
 	inputTime, err = time.Parse(time.Kitchen, timeString)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 
 	// Get local time zone
@@ -41,15 +43,17 @@ func getInputTime() (string, error) {
 
 	for {
 		fmt.Print("-> ")
-		time, _ := reader.ReadString('\n')
+		time, err := reader.ReadString('\n')
+		if err != nil {
+			return "", err
+		} else {
+			// convert CRLF to LF
+			time = strings.Replace(time, "\r\n", "", -1)
 
-		// convert CRLF to LF
-		time = strings.Replace(time, "\r\n", "", -1)
+			// trim whitespaces
+			time = strings.Replace(time, " ", "", -1)
 
-		// trim whitespaces
-		time = strings.Replace(time, " ", "", -1)
-
-		return time, nil
+			return time, nil
+		}
 	}
-
 }
